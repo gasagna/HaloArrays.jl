@@ -344,7 +344,7 @@ function haloswap!(a::HaloArray)
                      tag,
                      comm(a))
     end
-    return a
+    return nothing
 end
 
 end
