@@ -243,14 +243,6 @@ corresponding to the element, e.g. for `N=3` to `a[1, 1, 1]`.
 """
 origin(a::HaloArray) = nhalo(a) .+ 1
 
-"""
-    origin(a::AbstractArray{T, N}) where {T, N}
-
-For generic `AbstractArray`s, return a `N`-tuple of `1`s.
-"""
-origin(a::AbstractArray{T, N}) where {T, N} = ntuple(i->1, N)
-
-
 # array interface
 @inline Base.parent(a::HaloArray) = a.data
 
