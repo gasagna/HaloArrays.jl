@@ -41,6 +41,29 @@ MPI.Init()
     
     # two percent difference should not trigger random fails
     @test abs(t_broadcast - t_looping)/t_looping < 0.02
+
+    # test broadcasting is as fast as looping the underlying parent array
+    foo2(a, b) = (a .= b; a)
+
+    function bar2(a, b)
+        _a = parent(a)
+        _b = parent(b)
+        @inbounds for k = 2:101
+            for j = 2:101
+                @simd for i = 2:101
+                    _a[i, j, k] = _b[i, j, k]
+                end
+            end
+        end
+        return a
+    end
+
+    t_broadcast = @belapsed $foo2($a, $b)
+    t_looping   = @belapsed $bar2($a, $b)
+    
+    # two percent difference should not trigger random fails
+    @test abs(t_broadcast - t_looping)/t_looping < 0.02
+
 end
 
 MPI.Finalize()
