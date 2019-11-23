@@ -93,7 +93,7 @@ end
 
 @testset "broadcasting allocation                " begin
     a = HaloArray{Float64}(MPI.COMM_WORLD,
-                           (   1,    2,    1),
+                           (   1,    1,    1),
                            (true, true, true),
                            (   1,    1,    1),
                            (   1,    1,    1))
