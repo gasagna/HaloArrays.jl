@@ -253,6 +253,12 @@ origin(a::AbstractArray{T, N}) where {T, N} = ntuple(i->1, N)
 
 # array interface
 Base.parent(a::HaloArray) = a.data
+
+"""
+    Base.size(a::HaloArray)
+
+Return the size of the array `a`. This excludes the contribution of the halo points.
+"""
 Base.size(a::HaloArray{T, N, NHALO, SIZE}) where {T, N, NHALO, SIZE} = SIZE
 Base.IndexStyle(a::HaloArray) = Base.IndexCartesian()
 
