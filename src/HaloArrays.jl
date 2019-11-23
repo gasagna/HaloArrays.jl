@@ -332,17 +332,17 @@ function haloswap!(a::HaloArray)
         source_rank, dest_rank = source_dest_ranks(a, region)
         subsend = a.subarrays[(         region,  SEND)]
         subrecv = a.subarrays[(opposite(region), RECV)]
-        MPI.Sendrecv(parent(a),
-                     1,
-                     subsend,
-                     dest_rank,
-                     tag,
-                     parent(a),
-                     1,
-                     subrecv,
-                     source_rank,
-                     tag,
-                     comm(a))
+        MPI.Sendrecv!(parent(a),
+                      1,
+                      subsend,
+                      dest_rank,
+                      tag,
+                      parent(a),
+                      1,
+                      subrecv,
+                      source_rank,
+                      tag,
+                      comm(a))
     end
     return nothing
 end
