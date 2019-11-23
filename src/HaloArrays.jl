@@ -302,6 +302,9 @@ Base.BroadcastStyle(::Type{<:HaloArray}) = HAStyle()
     end
 end
 
+Base.unsafe_convert(::Type{Ptr{T}}, a::HaloArray{T}) where {T} =
+    Base.unsafe_convert(Ptr{T}, parent(a))
+
 """
     source_dest_ranks(a::HaloArray{T, N}, region::NTuple{N, Region}) where {T, N}
 
