@@ -72,4 +72,21 @@ end
     @test nhalo(c) == (1, 1, 1)
 end
 
+
+@testset "halo point indexing                    " begin
+    # locally the actual data is a 3x3x3 array and we
+    # index it with indices from 0 to 2
+    a = HaloArray{Float64}(MPI.COMM_WORLD,
+                           (   1,    2,    1),
+                           (true, true, true),
+                           (   1,    1,    1),
+                           (   1,    1,    1))
+
+    for k = 0:2, j = 0:2, i = 0:2
+        a[i, j, k] = i*j*k
+        @test a[i, j, k] == i*j*k
+    end
+    @test_throws BoundsError a[-1, 0, 1]
+end
+
 MPI.Finalize()
