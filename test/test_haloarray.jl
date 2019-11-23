@@ -17,6 +17,7 @@ MPI.Init()
                            (true, true, true),
                            (  64,   64,   64),
                            (   1,    2,    3))
+    @test size(a)  == (64, 64, 64)
     @test nhalo(a) == (1, 2, 3)
     @test size(parent(a)) == (66, 68, 70)
     @test origin(a) == (2, 3, 4)
@@ -51,7 +52,7 @@ MPI.Init()
                                                   (  -1,    1,    1))
 end
 
-@testset "similar, copy and indexing             " begin
+@testset "similar and copy                       " begin
 
     # should work
     a = HaloArray{Float64}(MPI.COMM_WORLD,
@@ -69,11 +70,6 @@ end
 
     c = similar(a)
     @test nhalo(c) == (1, 1, 1)
-
-    # test broadcasting does not allocate
-    foo(a, b, c, d, e, f) = (@allocated a .= 2.0.*b .+ 3.0.*c .+ 4.0.*d .+ 5.0.*e)
-
-    @test foo(a, b, c, a, b, c) == 0
 end
 
 MPI.Finalize()
