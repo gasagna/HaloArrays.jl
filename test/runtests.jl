@@ -2,6 +2,7 @@
 # use `0` for serial code
 tests = [ ("test_utils.jl",     0),
           ("test_haloarray.jl", 2),
+          ("test_sum.jl",       1),
           ("test_broadcast.jl", 1),
           ("test_swap.jl",      4)]
 
