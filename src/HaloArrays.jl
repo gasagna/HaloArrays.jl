@@ -252,7 +252,7 @@ origin(a::AbstractArray{T, N}) where {T, N} = ntuple(i->1, N)
 
 
 # array interface
-Base.parent(a::HaloArray) = a.data
+@inline Base.parent(a::HaloArray) = a.data
 
 """
     Base.size(a::HaloArray)
@@ -266,22 +266,24 @@ Base.IndexStyle(a::HaloArray) = Base.IndexCartesian()
 Base.similar(a::HaloArray{T}) where {T} = HaloArray{T}(comm(a), size(a), nhalo(a))
 Base.copy(a::HaloArray) = (b = similar(a); b .= a; b)
 
+@inline _offset(nhalo, idxs) = nhalo .+ idxs
+
 Base.@propagate_inbounds @inline function Base.getindex(a::HaloArray{T, N},
                                                      idxs::Vararg{Int, N}) where {T, N}
     @boundscheck checkbounds(a, idxs...)
-    @inbounds v = parent(a)[(nhalo(a) .+ idxs)...]
+    @inbounds v = parent(a)[_offset(nhalo(a), idxs)...]
     return v
 end
 
 Base.@propagate_inbounds @inline function Base.setindex!(a::HaloArray{T, N},
                                                    v, idxs::Vararg{Int, N}) where {T, N}
     @boundscheck checkbounds(a, idxs...)
-    @inbounds parent(a)[(nhalo(a) .+ idxs)...] = v
+    @inbounds parent(a)[_offset(nhalo(a), idxs)...] = v
     return v
 end
 
-Base.checkbounds(a::HaloArray{T, N, NHALO, SIZE}, idxs::Vararg{Int, N}) where {T, N, NHALO, SIZE} =
-    checkbounds(parent(a), (nhalo(a) .+ idxs)...)
+Base.checkbounds(a::HaloArray{T, N}, idxs::Vararg{Int, N}) where {T, N} =
+    checkbounds(parent(a), _offset(nhalo(a), idxs)...)
 
 # overload the broadcasting machinery
 const HAStyle = Broadcast.ArrayStyle{HaloArray}
