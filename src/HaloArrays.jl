@@ -268,19 +268,20 @@ Base.copy(a::HaloArray) = (b = similar(a); b .= a; b)
 
 Base.@propagate_inbounds @inline function Base.getindex(a::HaloArray{T, N},
                                                      idxs::Vararg{Int, N}) where {T, N}
-    _idxs = nhalo(a) .+ idxs
-    @boundscheck checkbounds(a.data, _idxs...)
-    @inbounds v = a.data[_idxs...]
+    @boundscheck checkbounds(a, idxs...)
+    @inbounds v = parent(a)[(nhalo(a) .+ idxs)...]
     return v
 end
 
 Base.@propagate_inbounds @inline function Base.setindex!(a::HaloArray{T, N},
                                                    v, idxs::Vararg{Int, N}) where {T, N}
-    _idxs = nhalo(a) .+ idxs
-    @boundscheck checkbounds(a.data, _idxs...)
-    @inbounds a.data[_idxs...] = v
+    @boundscheck checkbounds(a, idxs...)
+    @inbounds parent(a)[(nhalo(a) .+ idxs)...] = v
     return v
 end
+
+Base.checkbounds(a::HaloArray{T, N, NHALO, SIZE}, idxs::Vararg{Int, N}) where {T, N, NHALO, SIZE} =
+    checkbounds(parent(a), (nhalo(a) .+ idxs)...)
 
 # overload the broadcasting machinery
 const HAStyle = Broadcast.ArrayStyle{HaloArray}
